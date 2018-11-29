@@ -1,0 +1,23 @@
+{
+  "name": "shakrahList",
+  "version": "0.0.0",
+  "description": "shopping list builder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/syves/shakrahList.git"
+  },
+  "files": [],
+  "dependencies": {
+    "sanctuary": "0.15.x"
+  },
+  "devDependencies": {
+    "sanctuary-scripts": "2.0.x"
+  },
+  "scripts": {
+    "doctest": "sanctuary-doctest",
+    "lint": "sanctuary-lint",
+    "release": "sanctuary-release",
+    "test": "npm run lint && sanctuary-test && npm run doctest"
+  }
+}
