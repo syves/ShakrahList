@@ -26,6 +26,8 @@ Amount.tsp = value => ({unit: '@tsp', value});
 //    c :: Number -> Amount
 Amount.c = value => ({unit: '@c', value});
 
+// todo support fractions of cups. tsp. tbl
+
 /*  amountCata : {currency :: String -> Number -> a
                   stück :: Number -> a,
                   tbl :: Number -> a,
