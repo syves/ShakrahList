@@ -5,37 +5,17 @@ const S = require ('sanctuary');
 
 const Amount = module.exports = {};
 
-const f = unitType => value => ({
-  'unit': `@${unitType}`,
-  'value': value,
-  '@@show': () => `Amount.${unitType} (${S.show (value)})`,
+['stück', 'g', 'ml', 'tbl', 'tsp', 'c'].forEach (unitType => {
+  Amount[unitType] = value => ({
+    'unit': `@${unitType}`,
+    'value': value,
+    '@@show': () => `Amount.${unitType} (${S.show (value)})`,
+  });
 });
 
-//    stück :: Number -> Amount
-Amount.stück = f ('stück');
-
-//    kg :: Number -> Amount
 Amount.kg = value => Amount.g (value * 1000);
 
-//    g :: Number -> Amount
-Amount.g = f ('g');
-
-//    l :: Number -> Amount
 Amount.l = value => Amount.ml (value * 1000);
-
-//    ml :: Number -> Amount
-Amount.ml = f ('ml');
-
-//    tbl :: Number -> Amount
-Amount.tbl = f ('tbl');
-
-//    tsp :: Number -> Amount
-Amount.tsp = f ('tsp');
-
-//    c :: Number -> Amount
-Amount.c = f ('c');
-
-// todo support fractions of cups. tsp. tbl
 
 /*  amountCata : {currency :: String -> Number -> a
                   stück :: Number -> a,
