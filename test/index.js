@@ -9,16 +9,29 @@ const eq = require ('./eq');
 suite ('Amount', () => {
   test ('show', () => {
     eq (Amount.show (Amount.stück (1))) ('1');
-    eq (Amount.show (Amount.g (1))) ('1 g');
-    eq (Amount.show (Amount.g (1500))) ('1.5 kg');
-    eq (Amount.show (Amount.g (2000))) ('2 kg');
-    eq (Amount.show (Amount.kg (2))) ('2 kg');
-    eq (Amount.show (Amount.c (1))) ('1 c');
-    eq (Amount.show (Amount.tbl (1))) ('1 tbl');
-    eq (Amount.show (Amount.tsp (1))) ('1 tsp');
-    eq (Amount.show (Amount.ml (1))) ('1 ml');
+    eq (Amount.show (Amount.g (1)))     ('1 g');
+    eq (Amount.show (Amount.g (1500)))  ('1.5 kg');
+    eq (Amount.show (Amount.g (2000)))  ('2 kg');
+    eq (Amount.show (Amount.kg (2)))    ('2 kg');
+    eq (Amount.show (Amount.c (1)))     ('1 c');
+    eq (Amount.show (Amount.tbl (1)))   ('1 tbl');
+    eq (Amount.show (Amount.tsp (1)))   ('1 tsp');
+    eq (Amount.show (Amount.ml (1)))    ('1 ml');
     eq (Amount.show (Amount.ml (1000))) ('1 l');
-    eq (Amount.show (Amount.l (5))) ('5 l');
+    eq (Amount.show (Amount.l (5)))     ('5 l');
+  });
+  test ('show', () => {
+    eq (S.show (Amount.stück (1)))  ('Amount.stück (1)');
+    eq (S.show (Amount.g (1)))      ('Amount.g (1)');
+    eq (S.show (Amount.g (1500)))   ('Amount.g (1500)');
+    eq (S.show (Amount.g (2000)))   ('Amount.g (2000)');
+    eq (S.show (Amount.kg (2)))     ('Amount.g (2000)');
+    eq (S.show (Amount.c (1)))      ('Amount.c (1)');
+    eq (S.show (Amount.tbl (1)))    ('Amount.tbl (1)');
+    eq (S.show (Amount.tsp (1)))    ('Amount.tsp (1)');
+    eq (S.show (Amount.ml (1)))     ('Amount.ml (1)');
+    eq (S.show (Amount.ml (1000)))  ('Amount.ml (1000)');
+    eq (S.show (Amount.l (5)))      ('Amount.ml (5000)');
   });
 });
 

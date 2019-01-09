@@ -1,30 +1,45 @@
 'use strict';
 
+const S = require ('sanctuary');
+
+
 const Amount = module.exports = {};
 
 //    stück :: Number -> Amount
-Amount.stück = value => ({unit: '@stück', value});
+Amount.stück = value => ({'unit': '@stück',
+                          'value': value,
+                          '@@show': () => `Amount.stück (${S.show (value)})`});
 
 //    kg :: Number -> Amount
 Amount.kg = value => Amount.g (value * 1000);
 
 //    g :: Number -> Amount
-Amount.g = value => ({unit: '@g', value});
+Amount.g = value => ({'unit': '@g',
+                      'value': value,
+                      '@@show': () => `Amount.g (${S.show (value)})`});
 
 //    l :: Number -> Amount
 Amount.l = value => Amount.ml (value * 1000);
 
 //    ml :: Number -> Amount
-Amount.ml = value => ({unit: '@ml', value});
+Amount.ml = value => ({'unit': '@ml',
+                      'value': value,
+                      '@@show': () => `Amount.ml (${S.show (value)})`});
 
 //    tbl :: Number -> Amount
-Amount.tbl = value => ({unit: '@tbl', value});
+Amount.tbl = value => ({'unit': '@tbl',
+                      'value': value,
+                      '@@show': () => `Amount.tbl (${S.show (value)})`});
 
 //    tsp :: Number -> Amount
-Amount.tsp = value => ({unit: '@tsp', value});
+Amount.tsp = value => ({'unit': '@tsp',
+                      'value': value,
+                      '@@show': () => `Amount.tsp (${S.show (value)})`});
 
 //    c :: Number -> Amount
-Amount.c = value => ({unit: '@c', value});
+Amount.c = value => ({'unit': '@c',
+                      'value': value,
+                      '@@show': () => `Amount.c (${S.show (value)})`});
 
 // todo support fractions of cups. tsp. tbl
 
