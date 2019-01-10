@@ -32,6 +32,8 @@ suite ('Amount', () => {
     eq (S.show (Amount.ml (1)))     ('Amount.ml (1)');
     eq (S.show (Amount.ml (1000)))  ('Amount.ml (1000)');
     eq (S.show (Amount.l (5)))      ('Amount.ml (5000)');
+    eq (S.show (Amount.c_ (1) (2))) ('Amount.c_ (1) (2)');
+    eq (S.show (Amount.c_ (6) (2))) ('Amount.c_ (3) (1)');
   });
 });
 
