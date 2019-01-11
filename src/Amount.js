@@ -43,15 +43,26 @@ Amount.l = value => Amount.ml (value * 1000);
                   -> Amount
                   -> a
 */
-Amount.cata = cases => amount =>
-  cases[amount.unit] (amount.value.num);
+Amount.cata = cases => amount => {
+  switch (amount.unit) {
+    case '@stück':
+    case '@g':
+    case '@ml':
+      return cases[amount.unit] (amount.value.num);
+    case '@c':
+    case '@tsp':
+    case '@tbl':
+      return cases[amount.unit] (amount.value.num) (amount.value.denom);
+  }
+};
 
 //    show :: Amount -> String
 Amount.show = Amount.cata ({
   '@stück': n => String (n),
   '@g': n => n >= 1000 ? String (n / 1000) + ' kg' : String (n) + ' g',
-  '@tbl': n => String (n) + ' tbl',
-  '@tsp': n => String (n) + ' tsp',
-  '@c': n => String (n) + ' c',
+  '@tbl': num => denom => String (num) + ' tbl',
+  '@tsp': num => denom => String (num) + ' tsp',
+  '@c': num => denom =>
+    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' c',
   '@ml': n => n >= 1000 ? String (n / 1000) + ' l' : String (n) + ' ml',
 });
