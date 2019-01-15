@@ -20,6 +20,8 @@ suite ('Amount', () => {
     eq (Amount.show (Amount.ml (1000))) ('1 l');
     eq (Amount.show (Amount.l (5)))     ('5 l');
     eq (Amount.show (Amount.c_ (1) (2))) ('1/2 c');
+    eq (Amount.show (Amount.tsp_ (1) (2))) ('1/2 tsp');
+    eq (Amount.show (Amount.tbl_ (1) (2))) ('1/2 tbl');
   });
   test ('show', () => {
     eq (S.show (Amount.stück (1)))  ('Amount.stück (1)');

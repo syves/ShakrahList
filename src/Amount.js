@@ -60,8 +60,10 @@ Amount.cata = cases => amount => {
 Amount.show = Amount.cata ({
   '@stück': n => String (n),
   '@g': n => n >= 1000 ? String (n / 1000) + ' kg' : String (n) + ' g',
-  '@tbl': num => denom => String (num) + ' tbl',
-  '@tsp': num => denom => String (num) + ' tsp',
+  '@tbl': num => denom =>
+    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' tbl',
+  '@tsp': num => denom =>
+    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' tsp',
   '@c': num => denom =>
     String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' c',
   '@ml': n => n >= 1000 ? String (n / 1000) + ' l' : String (n) + ' ml',
