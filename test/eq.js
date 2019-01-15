@@ -2,7 +2,7 @@
 
 const assert = require ('assert');
 
-const S = require ('sanctuary');
+const S = require ('../src/sanctuary');
 
 module.exports = actual => expected => {
   assert.strictEqual (S.show (actual), S.show (expected));

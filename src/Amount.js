@@ -1,6 +1,6 @@
 'use strict';
 
-const S = require ('sanctuary');
+const S = require ('./sanctuary');
 const Ratio = require ('./Ratio');
 
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const S = require ('sanctuary');
+const S = require ('../src/sanctuary');
 
 const Amount = require ('../src/Amount');
 const Ratio = require ('../src/Ratio');
@@ -45,5 +45,16 @@ suite ('Ratio', () => {
     eq (S.show (Ratio (1) (2))) ('Ratio (1) (2)');
     eq (S.show (Ratio (6) (4))) ('Ratio (3) (2)');
     eq (S.show (Ratio (4) (4))) ('Ratio (1) (1)');
+  });
+  test ('S.equals', () => {
+    eq (S.equals (Ratio (1) (2)) (Ratio (1) (2))) (true);
+    eq (S.equals (Ratio (1) (2)) (Ratio (2) (4))) (true);
+    eq (S.equals (Ratio (1) (2)) (Ratio (1) (1))) (false);
+    eq (S.equals (Ratio (1) (2)) (Ratio (2) (2))) (false);
+  });
+  test ('S.concat', () => {
+    eq (S.concat (Ratio (1) (2)) (Ratio (1) (2))) (Ratio (1) (1));
+    eq (S.concat (Ratio (1) (2)) (Ratio (1) (3))) (Ratio (5) (6));
+    eq (S.concat (Ratio (1) (2)) (Ratio (3) (4))) (Ratio (5) (4));
   });
 });
