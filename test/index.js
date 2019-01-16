@@ -50,7 +50,7 @@ suite ('Ratio', () => {
     eq (S.equals (Ratio (1) (2)) (Ratio (1) (2))) (true);
     eq (S.equals (Ratio (1) (2)) (Ratio (2) (4))) (true);
     eq (S.equals (Ratio (1) (2)) (Ratio (1) (1))) (false);
-    eq (S.equals (Ratio (1) (2)) (Ratio (2) (2))) (false);
+    eq (S.equals (Ratio (1) (2)) (Ratio (1) (2))) (false);
   });
   test ('S.concat', () => {
     eq (S.concat (Ratio (1) (2)) (Ratio (1) (2))) (Ratio (1) (1));
