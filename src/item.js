@@ -14,6 +14,7 @@ module.exports = name => amount => ({
   },
   'fantasy-land/lte': function(other) {
     return S.lt (other.name) (this.name) ||
-           S.equals (other.name) (this.name) && S.lte (other.amount) (this.amount);
-  }
+           (S.equals (other.name) (this.name) &&
+            S.lte (other.amount) (this.amount));
+  },
 });

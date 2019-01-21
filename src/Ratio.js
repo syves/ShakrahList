@@ -2,7 +2,12 @@
 
 const S = require ('./sanctuary');
 
-//    Ratio.Ratio : Integer -> Interger -> Ratio
+//#   Ratio :: Integer -> Interger -> Ratio
+//.
+//.   Data constructor for the Ratio type.
+//.
+//.   > Ratio (2) (4)
+//.   Ratio (1) (2)
 const Ratio = module.exports = num => denom => {
   for (let n = 2; n <= denom; n += 1) {
     if (num % n === 0 && denom % n === 0) {
