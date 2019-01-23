@@ -30,7 +30,7 @@ const List = module.exports = items => ({
                                          (S.concat (acc.amount)
                                                    (item.amount)))
                                  (Item ('bogus') (Amount.stück (0))))
-                       (S.groupBy (S.equals)
+                       (S.groupBy (x => y => S.equals (x.name) (y.name))
                                   (S.sort (S.concat (this.items)
                                                     (other.items)))));
   },
