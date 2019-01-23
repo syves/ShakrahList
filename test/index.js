@@ -10,23 +10,6 @@ const eq = require ('./eq');
 
 suite ('Amount', () => {
   test ('show', () => {
-    // eq (Amount.show (Amount.stück (1))) ('1');
-    // eq (Amount.show (Amount.g (1)))     ('1 g');
-    // eq (Amount.show (Amount.g (1500)))  ('1.5 kg');
-    // eq (Amount.show (Amount.g (2000)))  ('2 kg');
-    // eq (Amount.show (Amount.kg (2)))    ('2 kg');
-    // eq (Amount.show (Amount.c (1)))     ('1 c');
-    // eq (Amount.show (Amount.tbl (1)))   ('1 tbl');
-    // eq (Amount.show (Amount.tsp (1)))   ('1 tsp');
-    // eq (Amount.show (Amount.ml (1)))    ('1 ml');
-    // eq (Amount.show (Amount.ml (1000))) ('1 l');
-    // eq (Amount.show (Amount.l (5)))     ('5 l');
-    // eq (Amount.show (Amount.c_ (1) (2))) ('1/2 c');
-    // eq (Amount.show (Amount.tsp_ (1) (2))) ('1/2 tsp');
-    // eq (Amount.show (Amount.tbl_ (1) (2))) ('1/2 tbl');
-  });
-
-  test ('show', () => {
     eq (S.show (Amount.stück (1)))  ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (1) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
     eq (S.show (Amount.g (1)))      ('Amount ({"c": Ratio (0) (1), "g": Ratio (1) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
     eq (S.show (Amount.g (1500)))   ('Amount ({"c": Ratio (0) (1), "g": Ratio (1500) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');

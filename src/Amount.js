@@ -38,7 +38,3 @@ Amount.c_    = num => denom => Amount (S.insert ('c')     (Ratio (num) (denom)) 
 Amount.kg = value => Amount.g (value * 1000);
 
 Amount.l = value => Amount.ml (value * 1000);
-
-
-//    show :: Amount -> String
-Amount.show = amount => `Amount (${S.show (amount.quantities)})`;
