@@ -38,13 +38,13 @@ suite ('List', () => {
   });
 
   test ('S.concat', () => {
-    // const x = Item ('x') (Amount.c (1));
-    // const y = Item ('y') (Amount.c (1));
-    // eq (S.concat (List ([])) (List ([]))) (List ([]));
-    // eq (S.concat (List ([x])) (List ([]))) (List ([x]));
-    // eq (S.concat (List ([])) (List ([x]))) (List ([x]));
-    // eq (S.concat (List ([x])) (List ([y]))) (List ([x, y]));
-    // eq (S.concat (List ([x])) (List ([x]))) (List ([Item ('x') (Amount.c (2))]));
+    const x = Item ('x') (Amount.c (1));
+    const y = Item ('y') (Amount.c (1));
+    eq (S.concat (List ([])) (List ([]))) (List ([]));
+    eq (S.concat (List ([x])) (List ([]))) (List ([x]));
+    eq (S.concat (List ([])) (List ([x]))) (List ([x]));
+    eq (S.concat (List ([x])) (List ([y]))) (List ([x, y]));
+    eq (S.concat (List ([x])) (List ([x]))) (List ([Item ('x') (Amount.c (2))]));
   });
 });
 
