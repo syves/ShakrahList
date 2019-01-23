@@ -7,6 +7,7 @@ const Ratio = require ('./Ratio');
 
 const Amount = module.exports = quantities => ({
   'quantities': quantities,
+  '@@show': () => `Amount (${S.show (quantities)})`,
   'fantasy-land/equals': function(other) {
     return S.equals (this.quantities) (other.quantities);
   },
@@ -38,37 +39,6 @@ Amount.kg = value => Amount.g (value * 1000);
 
 Amount.l = value => Amount.ml (value * 1000);
 
-/*  Amount.cata :: { stück :: Number -> a
-                   , g     :: Number -> a
-                   , ml    :: Number -> a
-                   , c     :: Number -> Number -> a
-                   , tsp   :: Number -> Number -> a
-                   , tbl   :: Number -> Number -> a }
-                -> Amount
-                -> a
-*/
-Amount.cata = cases => amount => {
-  switch (amount.unit) {
-    case '@stück':
-    case '@g':
-    case '@ml':
-      return cases[amount.unit] (amount.value.num);
-    case '@c':
-    case '@tsp':
-    case '@tbl':
-      return cases[amount.unit] (amount.value.num) (amount.value.denom);
-  }
-};
 
 //    show :: Amount -> String
-Amount.show = Amount.cata ({
-  '@stück': n => String (n),
-  '@g': n => n >= 1000 ? String (n / 1000) + ' kg' : String (n) + ' g',
-  '@tbl': num => denom =>
-    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' tbl',
-  '@tsp': num => denom =>
-    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' tsp',
-  '@c': num => denom =>
-    String (num) + (denom === 1 ? '' : '/' + String (denom)) + ' c',
-  '@ml': n => n >= 1000 ? String (n / 1000) + ' l' : String (n) + ' ml',
-});
+Amount.show = amount => `Amount (${S.show (amount.quantities)})`;

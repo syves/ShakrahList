@@ -27,19 +27,19 @@ suite ('Amount', () => {
   });
 
   test ('show', () => {
-    // eq (S.show (Amount.stück (1)))  ('Amount.stück (1)');
-    // eq (S.show (Amount.g (1)))      ('Amount.g (1)');
-    // eq (S.show (Amount.g (1500)))   ('Amount.g (1500)');
-    // eq (S.show (Amount.g (2000)))   ('Amount.g (2000)');
-    // eq (S.show (Amount.kg (2)))     ('Amount.g (2000)');
-    // eq (S.show (Amount.c (1)))      ('Amount.c (1)');
-    // eq (S.show (Amount.tbl (1)))    ('Amount.tbl (1)');
-    // eq (S.show (Amount.tsp (1)))    ('Amount.tsp (1)');
-    // eq (S.show (Amount.ml (1)))     ('Amount.ml (1)');
-    // eq (S.show (Amount.ml (1000)))  ('Amount.ml (1000)');
-    // eq (S.show (Amount.l (5)))      ('Amount.ml (5000)');
-    // eq (S.show (Amount.c_ (1) (2))) ('Amount.c_ (1) (2)');
-    // eq (S.show (Amount.c_ (6) (2))) ('Amount.c_ (3) (1)');
+    eq (S.show (Amount.stück (1)))  ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (1) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.g (1)))      ('Amount ({"c": Ratio (0) (1), "g": Ratio (1) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.g (1500)))   ('Amount ({"c": Ratio (0) (1), "g": Ratio (1500) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.g (2000)))   ('Amount ({"c": Ratio (0) (1), "g": Ratio (2000) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.kg (2)))     ('Amount ({"c": Ratio (0) (1), "g": Ratio (2000) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.c (1)))      ('Amount ({"c": Ratio (1) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.tbl (1)))    ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (1) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.tsp (1)))    ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (1) (1)})');
+    eq (S.show (Amount.ml (1)))     ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (1) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.ml (1000)))  ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (1000) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.l (5)))      ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (5000) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.c_ (1) (2))) ('Amount ({"c": Ratio (1) (2), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.c_ (6) (2))) ('Amount ({"c": Ratio (3) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
   });
   test ('S.concat', () => {
     eq (S.concat (Amount.stück (1)) (Amount.stück (1))) (Amount.stück (2));
