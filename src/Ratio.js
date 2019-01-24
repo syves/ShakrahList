@@ -20,6 +20,7 @@ const Ratio = module.exports = num => denom => {
     denom,
     '@@show': () => `Ratio (${S.show (num)}) (${S.show (denom)})`,
     'fantasy-land/equals': other => other.num === num && other.denom === denom,
+    'fantasy-land/lte': other => num / denom <= other.num / other.denom,
     'fantasy-land/concat': other =>
       Ratio (other.num * denom + num * other.denom) (denom * other.denom),
   };

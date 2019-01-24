@@ -32,9 +32,12 @@ suite ('Amount', () => {
 
 suite ('List', () => {
   test ('S.show', () => {
-    console.log (Item, List);
-    // eq (S.show (List ([]))) ('List ([])');
-    // eq (S.show (List ([Item ('x') (Amount.c (1))]))) ('List ([Item ("x") (Amount.c (1))])');
+    eq (S.show (List ([]))) ('List ([])');
+    eq (S.show (List ([Item ('x') (Amount.c (1))]))) ('List ([Item ("x") (Amount.c (1))])');
+  });
+  test ('List.present', () => {
+    eq (List.present (List ([Item ('Mango') (Amount.stück (1)), Item ('Mushrooms') (Amount.c (2))])))
+       (['1 stück Mango', '2 cup Mushrooms']);
   });
 
   test ('S.concat', () => {
