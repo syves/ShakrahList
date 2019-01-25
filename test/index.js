@@ -23,6 +23,8 @@ suite ('Amount', () => {
     eq (S.show (Amount.l (5)))      ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (5000) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
     eq (S.show (Amount.c_ (1) (2))) ('Amount ({"c": Ratio (1) (2), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
     eq (S.show (Amount.c_ (6) (2))) ('Amount ({"c": Ratio (3) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)})');
+    eq (S.show (Amount.tsp_ (1) (2))) ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (1) (2)})');
+    eq (S.show (Amount.tbl_ (1) (4))) ('Amount ({"c": Ratio (0) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (1) (4), "tsp": Ratio (0) (1)})');
   });
   test ('S.concat', () => {
     eq (S.concat (Amount.stück (1)) (Amount.stück (1))) (Amount.stück (2));
@@ -38,6 +40,8 @@ suite ('List', () => {
   test ('List.present', () => {
     eq (List.present (List ([Item ('Mango') (Amount.stück (1)), Item ('Mushrooms') (Amount.c (2))])))
        (['1 stück Mango', '2 c Mushrooms']);
+    eq (List.present (List ([Item ('Mango') (Amount.stück (1)), Item ('Mushrooms') (Amount.c_ (1) (2))])))
+       (['1 stück Mango', '1/2 c Mushrooms']);
   });
 
   test ('S.concat', () => {
@@ -70,5 +74,8 @@ suite ('Ratio', () => {
     eq (S.concat (Ratio (1) (2)) (Ratio (1) (2))) (Ratio (1) (1));
     eq (S.concat (Ratio (1) (2)) (Ratio (1) (3))) (Ratio (5) (6));
     eq (S.concat (Ratio (1) (2)) (Ratio (3) (4))) (Ratio (5) (4));
+  });
+  test ('Ratio.from', () => {
+    eq (Ratio.from (1) (2) (3)) (Ratio (5) (3));
   });
 });

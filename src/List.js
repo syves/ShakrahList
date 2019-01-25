@@ -16,7 +16,7 @@ const List = module.exports = items => ({
   '@@show': function() {
     return 'List (' + S.show (this.items) + ')';
   },
-  [util.inspect.custom]: function() {
+  [util.inspect.custom]: /* istanbul ignore next */ function() {
     return this['@@show'] ();
   },
   'fantasy-land/equals': function(other) {
