@@ -33,11 +33,11 @@ suite ('Amount', () => {
 suite ('List', () => {
   test ('S.show', () => {
     eq (S.show (List ([]))) ('List ([])');
-    eq (S.show (List ([Item ('x') (Amount.c (1))]))) ('List ([Item ("x") (Amount.c (1))])');
+    eq (S.show (List ([Item ('x') (Amount.c (1))]))) ('List ([Item ("x") (Amount ({"c": Ratio (1) (1), "g": Ratio (0) (1), "ml": Ratio (0) (1), "stück": Ratio (0) (1), "tbl": Ratio (0) (1), "tsp": Ratio (0) (1)}))])');
   });
   test ('List.present', () => {
     eq (List.present (List ([Item ('Mango') (Amount.stück (1)), Item ('Mushrooms') (Amount.c (2))])))
-       (['1 stück Mango', '2 cup Mushrooms']);
+       (['1 stück Mango', '2 c Mushrooms']);
   });
 
   test ('S.concat', () => {

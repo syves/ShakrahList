@@ -35,10 +35,9 @@ const List = module.exports = items => ({
 });
 
 // List.present :: List -> Array String
-// -[Pair ("stück") (Ratio (1) (1)), Pair ("c") (Ratio (2) (1))]
-//TODO  lost name needs refactoring
 List.present = list =>
-  S.map (([unit, ratio]) => unit)
-        (S.chain (item => S.pairs (S.filter (S.gt (Ratio (0) (1)))
-                                            (item.amount.quantities)))
-                 (list.items));
+  S.chain (item => S.map (([unit, {num, denom}]) =>
+                            `${num}${denom === 1 ? '' : '/' + denom} ${unit} ${item.name}`) // eslint-disable-line max-len
+                         (S.pairs (S.filter (S.gt (Ratio (0) (1)))
+                                            (item.amount.quantities))))
+          (list.items);
