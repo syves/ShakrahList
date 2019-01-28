@@ -20,7 +20,16 @@ const Ratio = $.NullaryType
   ('')
   (x => type (x) === 'ShakrahList/Ratio');
 
+const Recipe = $.RecordType ({
+  title: $.String,
+  instructions: $.String,
+  ingredients: List,
+  description: S.MaybeType ($.String),
+  nutrition: S.MaybeType ($.String),
+  servings: S.MaybeType ($.String),
+});
+
 module.exports = S.create ({
   checkTypes: true,
-  env: S.env.concat ([List, Ratio, Item]),
+  env: S.env.concat ([List, Ratio, Item, Recipe]),
 });
