@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 GET   /recipes
 POST  /recipes
