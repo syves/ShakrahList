@@ -59,8 +59,8 @@ const matches = desc => path => {
 //  GET *
 //  404
 
-//    recipesHandler :: Response -> Undefined
-const recipesHandler = res => {
+//    recipesHandler :: StrMap String -> Response -> Undefined
+const recipesHandler = captures => res => {
   res.writeHead (200, {'Content-Type': 'text/plain'});
   res.write ('recipes\n');
   res.end ();
@@ -74,17 +74,24 @@ const db = {
   },
 };
 
-//    ingredientsHandler :: Response -> Undefined
-const ingredientsHandler = res => {
+//    ingredientsHandler :: StrMap String -> HttpResponse
+const ingredientsHandler = captures => ({
+  headers: {'Content-Type': 'text/plain'},
+  body: 'ingredients\n',
+});
+
+//    ingredientsHandler :: StrMap String -> Response -> Undefined
+const ingredientsHandler = captures => res => {
   res.writeHead (200, {'Content-Type': 'text/plain'});
   res.write ('ingredients\n');
   res.end ();
 };
 
-//    ingredientHandler :: Request -> Response -> Undefined
-const ingredientHandler = req => res => {
+//    ingredientHandler :: StrMap String -> Response -> Undefined
+//    ingredientHandler :: { id :: String } -> Response -> Undefined
+const ingredientHandler = captures => res => {
   res.writeHead (200, {'Content-Type': 'text/plain'});
-  res.write ('???\n');
+  res.write (S.show (db.ingredients[captures.id]) + '\n');
   res.end ();
 };
 
@@ -96,10 +103,19 @@ const handlers = [
 ];
 
 const server = http.createServer ((req, res) => {
-// broke find  must pass function that returns a boool?
-  //    match :: Maybe (Pair (Array Component) (? -> ?))
-  const match = S.find (([desc, handler]) => matches (desc) (req.url)) (handlers);
+  //    impure :: Maybe (Response -> Undefined)
+  const impure =
+  S.reduce (impure => ([desc, handler]) =>
+              S.alt (impure)
+                    (S.map (captures => handler (captures))
+                           (matches (desc) (req.url))))
+           (S.Nothing)
+           (handlers);
 
-  S.map (([desc, handler]) => handler (res)) (match)
+  if (impure.isJust) {
+    impure.value (res);
+  } else {
+    // Custom error handling...
+  }
 });
 server.listen (8000);
