@@ -5,6 +5,8 @@ const util = require ('util');
 
 const S = require ('sanctuary');
 
+const Response = require ('./Response');
+
 
 //    Literal :: String -> Component
 const Literal = s => ({
@@ -56,15 +58,11 @@ const matches = desc => path => {
 //  GET /ingredients/123
 //  200 "cucumbers"
 //
+//  GET /ingredients/124
+//  404
+//
 //  GET *
 //  404
-
-//    recipesHandler :: StrMap String -> Response -> Undefined
-const recipesHandler = captures => res => {
-  res.writeHead (200, {'Content-Type': 'text/plain'});
-  res.write ('recipes\n');
-  res.end ();
-};
 
 const db = {
   ingredients: {
@@ -74,28 +72,23 @@ const db = {
   },
 };
 
-//    ingredientsHandler :: StrMap String -> HttpResponse
-const ingredientsHandler = captures => ({
-  headers: {'Content-Type': 'text/plain'},
-  body: 'ingredients\n',
-});
+//    recipesHandler :: {} -> Response
+const recipesHandler = captures =>
+  Response.Ok ({'Content-Type': 'text/plain'})
+              ('recipes\n');
 
-//    ingredientsHandler :: StrMap String -> Response -> Undefined
-const ingredientsHandler = captures => res => {
-  res.writeHead (200, {'Content-Type': 'text/plain'});
-  res.write ('ingredients\n');
-  res.end ();
-};
+//    ingredientsHandler :: {} -> Response
+const ingredientsHandler = captures =>
+  Response.Ok ({'Content-Type': 'application/json'})
+              (JSON.stringify (['foo', 'bar', 'baz']));
 
-//    ingredientHandler :: StrMap String -> Response -> Undefined
-//    ingredientHandler :: { id :: String } -> Response -> Undefined
-const ingredientHandler = captures => res => {
-  res.writeHead (200, {'Content-Type': 'text/plain'});
-  res.write (S.show (db.ingredients[captures.id]) + '\n');
-  res.end ();
-};
+//    ingredientHandler :: { id :: String } -> Response
+const ingredientHandler = captures =>
+  Response.Ok ({'Content-Type': 'text/plain'})
+              (S.show (db.ingredients[captures.id]) + '\n');
 
-//    handlers :: Array (Pair (Array Component) (? -> ?))
+//    handlers :: Array (Pair (Array Component)
+//                            (StrMap String -> Response))
 const handlers = [
   S.Pair ([Literal ('recipes')]) (recipesHandler),
   S.Pair ([Literal ('ingredients')]) (ingredientsHandler),
@@ -103,17 +96,21 @@ const handlers = [
 ];
 
 const server = http.createServer ((req, res) => {
-  //    impure :: Maybe (Response -> Undefined)
-  const impure =
-  S.reduce (impure => ([desc, handler]) =>
-              S.alt (impure)
-                    (S.map (captures => handler (captures))
-                           (matches (desc) (req.url))))
-           (S.Nothing)
-           (handlers);
+  //    S.reduce takes (function) (accumulator) (collection).
+  //    response :: Maybe Response
+  const response = S.reduce (response_ => ([desc, handler]) =>
+                               S.alt (response_)
+                                     // vvv :: Maybe Response
+                                     (S.map (handler /* StrMap String -> Response */)
+                                            // vvv :: Maybe (StrMap String)
+                                            (matches (desc) (req.url))))
+                            (S.Nothing /* Maybe Response */)
+                            (handlers);
 
-  if (impure.isJust) {
-    impure.value (res);
+  if (response.isJust) {
+    res.writeHead (response.value.statusCode, response.value.headers);
+    res.write (response.value.body);
+    res.end ();
   } else {
     // Custom error handling...
   }
