@@ -1,12 +1,21 @@
 'use strict';
 
-const Response = module.exports
+const http = require ('http');
 
-// Response.Ok :: StrMap String -> String -> Response
-Response.Ok = headers => body => ({
-  statusCode: 200,
+const S = require ('sanctuary');
+
+
+//    transKey :: String -> String
+const transKey = s => s.replace (/ ./g, s => S.toUpper (s))
+                       .replace (/\W/g, '');
+
+//    transVal :: Integer -> StrMap String -> String -> Response
+const transVal = statusCode => headers => body => ({
+  statusCode,
   headers,
   body,
 });
 
-
+module.exports =
+  S.fromPairs (S.map (S.bimap (transKey) (transVal))
+                     (S.map (S.swap) (S.pairs (http.STATUS_CODES))));

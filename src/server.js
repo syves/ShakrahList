@@ -74,17 +74,17 @@ const db = {
 
 //    recipesHandler :: {} -> Response
 const recipesHandler = captures =>
-  Response.Ok ({'Content-Type': 'text/plain'})
+  Response.OK ({'Content-Type': 'text/plain'})
               ('recipes\n');
 
 //    ingredientsHandler :: {} -> Response
 const ingredientsHandler = captures =>
-  Response.Ok ({'Content-Type': 'application/json'})
+  Response.OK ({'Content-Type': 'application/json'})
               (JSON.stringify (['foo', 'bar', 'baz']));
 
 //    ingredientHandler :: { id :: String } -> Response
 const ingredientHandler = captures =>
-  Response.Ok ({'Content-Type': 'text/plain'})
+  Response.OK ({'Content-Type': 'text/plain'})
               (S.show (db.ingredients[captures.id]) + '\n');
 
 //    handlers :: Array (Pair (Array Component)
