@@ -87,8 +87,12 @@ const ingredientHandler = captures =>
   Response.OK ({'Content-Type': 'text/plain'})
               (S.show (db.ingredients[captures.id]) + '\n');
 
+  // :: Maybe String -> ... -> Response
+  S.get (S.K (true)) (captures.id) (db.ingredients) // :: maybe String
 //    handlers :: Array (Pair (Array Component)
 //                            (StrMap String -> Response))
+//(str) => Response (str) 
+//
 const handlers = [
   S.Pair ([Literal ('recipes')]) (recipesHandler),
   S.Pair ([Literal ('ingredients')]) (ingredientsHandler),
