@@ -66,9 +66,9 @@ const matches = desc => path => {
 
 const db = {
   ingredients: {
-    '121': 'apples',
-    '122': 'bananas',
-    '123': 'cucumbers',
+    '121': {id: 121, name: 'apples'},
+    '122': {id: 122, name: 'bananas'},
+    '123': {id: 123, name: 'cucumbers'},
   },
 };
 
@@ -84,15 +84,11 @@ const ingredientsHandler = captures =>
 
 //    ingredientHandler :: { id :: String } -> Response
 const ingredientHandler = captures =>
-  Response.OK ({'Content-Type': 'text/plain'})
-              (S.show (db.ingredients[captures.id]) + '\n');
+  S.maybe (Response.NotFound ({}) (''))
+          (ingredient => Response.OK ({'Content-Type': 'application/json'})
+                                     (JSON.stringify (ingredient)))
+          (S.get (S.K (true)) (captures.id) (db.ingredients));
 
-  // :: Maybe String -> ... -> Response
-  S.get (S.K (true)) (captures.id) (db.ingredients) // :: maybe String
-//    handlers :: Array (Pair (Array Component)
-//                            (StrMap String -> Response))
-//(str) => Response (str) 
-//
 const handlers = [
   S.Pair ([Literal ('recipes')]) (recipesHandler),
   S.Pair ([Literal ('ingredients')]) (ingredientsHandler),
