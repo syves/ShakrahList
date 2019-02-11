@@ -6,6 +6,7 @@ const util = require ('util');
 const S = require ('sanctuary');
 
 const Response = require ('./Response');
+const JsonResponse = require ('./JsonResponse');
 
 
 //    Literal :: String -> Component
@@ -85,8 +86,7 @@ const ingredientsHandler = captures =>
 //    ingredientHandler :: { id :: String } -> Response
 const ingredientHandler = captures =>
   S.maybe (Response.NotFound ({}) (''))
-          (ingredient => Response.OK ({'Content-Type': 'application/json'})
-                                     (JSON.stringify (ingredient)))
+          (JsonResponse.OK ({}))
           (S.get (S.K (true)) (captures.id) (db.ingredients));
 
 const handlers = [
