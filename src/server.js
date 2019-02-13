@@ -75,13 +75,11 @@ const db = {
 
 //    recipesHandler :: {} -> Response
 const recipesHandler = captures =>
-  Response.OK ({'Content-Type': 'text/plain'})
-              ('recipes\n');
+  JsonResponse.OK ({}) ('recipes');
 
 //    ingredientsHandler :: {} -> Response
 const ingredientsHandler = captures =>
-  Response.OK ({'Content-Type': 'application/json'})
-              (JSON.stringify (['foo', 'bar', 'baz']));
+  JsonResponse.OK ({}) (['foo', 'bar', 'baz']);
 
 //    ingredientHandler :: { id :: String } -> Response
 const ingredientHandler = captures =>
