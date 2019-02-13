@@ -50,21 +50,6 @@ const matches = desc => path => {
                   (S.zip (desc) (pathStrs));
 };
 
-//  GET /recipes
-//  200 "recipes"
-//
-//  GET /ingredients
-//  200 "ingredients"
-//
-//  GET /ingredients/123
-//  200 "cucumbers"
-//
-//  GET /ingredients/124
-//  404
-//
-//  GET *
-//  404
-
 const db = {
   ingredients: {
     '121': {id: 121, name: 'apples'},
@@ -73,36 +58,52 @@ const db = {
   },
 };
 
-//    recipesHandler :: {} -> Response
-const recipesHandler = captures =>
+//    GET_recipes :: {} -> Response
+const GET_recipes = captures =>
   JsonResponse.OK ({}) ('recipes');
 
-//    ingredientsHandler :: {} -> Response
-const ingredientsHandler = captures =>
-  JsonResponse.OK ({}) (['foo', 'bar', 'baz']);
+//    GET_ingredients :: {} -> Response
+const GET_ingredients = captures =>
+  JsonResponse.OK ({}) (Object.values (db.ingredients));
 
-//    ingredientHandler :: { id :: String } -> Response
-const ingredientHandler = captures =>
+const POST_ingredients = captures => null;
+
+const DELETE_ingredients_$id = captures => null;
+
+//    GET_ingredients_$id :: { id :: String } -> Response
+const GET_ingredients_$id = captures =>
   S.maybe (Response.NotFound ({}) (''))
           (JsonResponse.OK ({}))
           (S.get (S.K (true)) (captures.id) (db.ingredients));
 
 const handlers = [
-  S.Pair ([Literal ('recipes')]) (recipesHandler),
-  S.Pair ([Literal ('ingredients')]) (ingredientsHandler),
-  S.Pair ([Literal ('ingredients'), Wild ('id')]) (ingredientHandler),
+  S.Pair ([Literal ('recipes')])
+         ({GET: GET_recipes}),
+  S.Pair ([Literal ('ingredients')])
+         ({GET: GET_ingredients,
+           POST: POST_ingredients}),
+  S.Pair ([Literal ('ingredients'), Wild ('id')])
+         ({GET: GET_ingredients_$id,
+           DELETE: DELETE_ingredients_$id}),
 ];
 
 const server = http.createServer ((req, res) => {
   //    S.reduce takes (function) (accumulator) (collection).
   //    response :: Maybe Response
-  const response = S.reduce (response_ => ([desc, handler]) =>
+  const response = S.reduce (response_ => ([desc, handlers]) =>
                                S.alt (response_)
-                                     // vvv :: Maybe Response
-                                     (S.map (handler /* StrMap String -> Response */)
-                                            // vvv :: Maybe (StrMap String)
-                                            (matches (desc) (req.url))))
-                            (S.Nothing /* Maybe Response */)
+
+                                     req.method :: String
+                                     handlers :: StrMap Function
+
+                                     S.maybe (Response.MethodNotAllowed ({Allow: S.joinWith (', ') (Object.keys (handlers))}) (''))
+                                             (handler => response)
+                                             (S.get (S.K (true)) (req.method) (handlers))
+
+                                     (S.map (handlers.GET)
+                                            (matches (desc)
+                                                     (req.url))))
+                            (S.Nothing)
                             (handlers);
 
   if (response.isJust) {
