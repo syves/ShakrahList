@@ -90,19 +90,36 @@ const handlers = [
 const server = http.createServer ((req, res) => {
   //    S.reduce takes (function) (accumulator) (collection).
   //    response :: Maybe Response
+
+  //  For each [desc, handler] in handlers:
+  //
+  //      Use ‘matches’ function to determine whether ‘req.url’
+  //      matches ‘desc’.
+  //
+  //      If yes, then:
+  //
+  //          See whether ‘req.method’ matches a key in ‘handler’.
+  //
+  //          If yes, then:
+  //
+  //            * Exit loop with the result of applying the appropriate
+  //              handler to the captures returned by ‘matches’.
+  //
+  //          If no, then:
+  //
+  //            * Exit loop with MethodNotAllowed.
+  //
+  //      If no, then:
+  //
+  //          Continue to next [desc, handler] pair.
+
   const response = S.reduce (response_ => ([desc, handlers]) =>
                                S.alt (response_)
-
-                                     req.method :: String
-                                     handlers :: StrMap Function
-
-                                     S.maybe (Response.MethodNotAllowed ({Allow: S.joinWith (', ') (Object.keys (handlers))}) (''))
-                                             (handler => response)
-                                             (S.get (S.K (true)) (req.method) (handlers))
-
-                                     (S.map (handlers.GET)
-                                            (matches (desc)
-                                                     (req.url))))
+                                     (S.map (captures =>
+                                               S.maybe (Response.MethodNotAllowed ({Allow: S.joinWith (', ') (Object.keys (handlers))}) (''))
+                                                       (S.T (captures))
+                                                       (S.get (S.K (true)) (req.method) (handlers)))
+                                            (matches (desc) (req.url))))
                             (S.Nothing)
                             (handlers);
 
