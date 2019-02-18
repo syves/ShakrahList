@@ -1,127 +1,32 @@
-'use strict'
+'use strict';
 
 const http = require ('http');
-const util = require ('util');
 
 const S = require ('sanctuary');
 
 const Response = require ('./Response');
-const JsonResponse = require ('./JsonResponse');
+const matches = require ('./matches');
+const routes = require ('./routes');
 
-
-//    Literal :: String -> Component
-const Literal = s => ({
-  'isLiteral': true,
-  'isWild': false,
-  'value': s,
-  '@@show': () => `Literal (${S.show (s)})`,
-  [util.inspect.custom]: function() { return S.show (this); },
-});
-
-//    Wild :: String -> Component
-const Wild = s => ({
-  'isLiteral': false,
-  'isWild': true,
-  'label': s,
-  '@@show': () => `Wild (${S.show (s)})`,
-  [util.inspect.custom]: function() { return S.show (this); },
-});
-
-//    all :: Foldable f => (a -> Boolean) -> f a -> Boolean
-const all = pred => S.reduce (b => x => b && pred (x)) (true);
-
-//    matches :: Array Component -> String -> Maybe (StrMap String)
-//
-//    > matches ([Literal ('foos'), Wild ('id')]) ('/foos/123')
-//    Just ({id: '123'})
-//
-//    > matches ([Literal ('foos'), Wild ('id')]) ('/foos/123/bars')
-//    Nothing
-const matches = desc => path => {
-  const pathStrs = S.reject (S.equals ('')) (S.splitOn ('/') (path));
-
-  return S.reduce (acc /* :: Maybe (StrMap String) */ =>
-                    ([comp /* :: Component */, pathStr /* :: String */]) =>
-                      comp.isWild ?
-                        S.map (S.insert (comp.label) (pathStr)) (acc) :
-                      // Literal
-                        comp.value === pathStr ? acc : S.Nothing)
-                  (desc.length === pathStrs.length ? S.Just ({}) : S.Nothing)
-                  (S.zip (desc) (pathStrs));
-};
-
-const db = {
-  ingredients: {
-    '121': {id: 121, name: 'apples'},
-    '122': {id: 122, name: 'bananas'},
-    '123': {id: 123, name: 'cucumbers'},
-  },
-};
-
-//    GET_recipes :: {} -> Response
-const GET_recipes = captures =>
-  JsonResponse.OK ({}) ('recipes');
-
-//    GET_ingredients :: {} -> Response
-const GET_ingredients = captures =>
-  JsonResponse.OK ({}) (Object.values (db.ingredients));
-
-const POST_ingredients = captures => null;
-
-const DELETE_ingredients_$id = captures => null;
-
-//    GET_ingredients_$id :: { id :: String } -> Response
-const GET_ingredients_$id = captures =>
-  S.maybe (Response.NotFound ({}) (''))
-          (JsonResponse.OK ({}))
-          (S.get (S.K (true)) (captures.id) (db.ingredients));
-
-const handlers = [
-  S.Pair ([Literal ('recipes')])
-         ({GET: GET_recipes}),
-  S.Pair ([Literal ('ingredients')])
-         ({GET: GET_ingredients,
-           POST: POST_ingredients}),
-  S.Pair ([Literal ('ingredients'), Wild ('id')])
-         ({GET: GET_ingredients_$id,
-           DELETE: DELETE_ingredients_$id}),
-];
 
 const server = http.createServer ((req, res) => {
-  //    S.reduce takes (function) (accumulator) (collection).
-  //    response :: Maybe Response
-
-  //  For each [desc, handler] in handlers:
-  //
-  //      Use ‘matches’ function to determine whether ‘req.url’
-  //      matches ‘desc’.
-  //
-  //      If yes, then:
-  //
-  //          See whether ‘req.method’ matches a key in ‘handler’.
-  //
-  //          If yes, then:
-  //
-  //            * Exit loop with the result of applying the appropriate
-  //              handler to the captures returned by ‘matches’.
-  //
-  //          If no, then:
-  //
-  //            * Exit loop with MethodNotAllowed.
-  //
-  //      If no, then:
-  //
-  //          Continue to next [desc, handler] pair.
-
-  const response = S.reduce (response_ => ([desc, handlers]) =>
-                               S.alt (response_)
-                                     (S.map (captures =>
-                                               S.maybe (Response.MethodNotAllowed ({Allow: S.joinWith (', ') (Object.keys (handlers))}) (''))
-                                                       (S.T (captures))
-                                                       (S.get (S.K (true)) (req.method) (handlers)))
-                                            (matches (desc) (req.url))))
-                            (S.Nothing)
-                            (handlers);
+  const response =
+  S.reduce (response_ => ([desc, handlers]) =>
+              S.alt (response_)
+                    (S.map (captures => {
+                              const Allow =
+                                S.joinWith (', ') (Object.keys (handlers));
+                              const defaultResponse =
+                                Response.MethodNotAllowed ({Allow}) ('');
+                              return S.maybe (defaultResponse)
+                                             (S.T (captures))
+                                             (S.get (S.K (true))
+                                                    (req.method)
+                                                    (handlers));
+                            })
+                           (matches (desc) (req.url))))
+           (S.Nothing)
+           (routes);
 
   if (response.isJust) {
     res.writeHead (response.value.statusCode, response.value.headers);
