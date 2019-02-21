@@ -9,6 +9,8 @@
   },
   "files": [],
   "dependencies": {
+    "fluture": "10.3.x",
+    "fluture-sanctuary-types": "3.0.x",
     "sanctuary": "0.15.x"
   },
   "devDependencies": {

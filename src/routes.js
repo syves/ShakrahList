@@ -1,5 +1,7 @@
 'use strict';
 
+const Future = require ('fluture');
+
 const {Literal, Wild} = require ('./Component');
 const JsonResponse = require ('./JsonResponse');
 const Response = require ('./Response');
@@ -11,21 +13,21 @@ module.exports = [
 
   S.Pair ([Literal ('recipes')]) ({
     GET: captures =>
-      JsonResponse.OK ({}) ('recipes'),
+      Future.after (2500, JsonResponse.OK ({}) ('recipes')),
   }),
 
   S.Pair ([Literal ('ingredients')]) ({
     GET: captures =>
-      JsonResponse.OK ({}) (Object.values (db.ingredients)),
+      Future.of (JsonResponse.OK ({}) (Object.values (db.ingredients))),
     POST: captures =>
       null,
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
     GET: captures =>
-      S.maybe (Response.NotFound ({}) (''))
-              (JsonResponse.OK ({}))
-              (S.get (S.K (true)) (captures.id) (db.ingredients)),
+      Future.of (S.maybe (Response.NotFound ({}) (''))
+                         (JsonResponse.OK ({}))
+                         (S.get (S.K (true)) (captures.id) (db.ingredients))),
     DELETE: captures =>
       null,
   }),

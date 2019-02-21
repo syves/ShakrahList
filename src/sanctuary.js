@@ -3,7 +3,7 @@
 const S = require ('sanctuary');
 const $ = require ('sanctuary-def');
 const type = require ('sanctuary-type-identifiers');
-
+const fst = require ('fluture-sanctuary-types');
 
 const Item = $.NullaryType
   ('ShakrahList/Item')
@@ -31,5 +31,5 @@ const Recipe = $.RecordType ({
 
 module.exports = S.create ({
   checkTypes: true,
-  env: S.env.concat ([List, Ratio, Item, Recipe]),
+  env: S.env.concat (fst.env, [List, Ratio, Item, Recipe]),
 });
