@@ -19,8 +19,8 @@ module.exports = [
   S.Pair ([Literal ('ingredients')]) ({
     GET: captures =>
       Future.of (JsonResponse.OK ({}) (Object.values (db.ingredients))),
-    POST: captures =>
-      null,
+    POST: captures => //if name is unique create ingred.
+      ,
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
@@ -33,6 +33,7 @@ module.exports = [
                          (ingredient => (delete db.ingredients[String (ingredient.id)],
                                          Response.NoContent ({}) ('')))
                          (S.get (S.K (true)) (captures.id) (db.ingredients))),
+
   }),
 
 ];
