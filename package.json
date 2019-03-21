@@ -11,6 +11,8 @@
   "dependencies": {
     "fluture": "10.3.x",
     "fluture-sanctuary-types": "3.0.x",
+    "knex": "0.16.x",
+    "pg": "7.9.x",
     "sanctuary": "0.15.x"
   },
   "devDependencies": {
