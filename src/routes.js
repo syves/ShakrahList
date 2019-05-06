@@ -32,10 +32,18 @@ module.exports = [
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
-    GET: captures =>
-      Future.of (S.maybe (Response.NotFound ({}) (''))
-                         (JsonResponse.OK ({}))
-                         (S.value (captures.id) (db.ingredients))),
+    GET: captures => {
+      //    fut :: Future Error (Array Ingredient)
+      const fut = Future ((reject, resolve) => {
+        knex.select ('id', 'name')
+            .from ('ingredient')
+            .where ('id', '=', captures.id)
+            .then (resolve, reject);
+      });
+      return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                     (fut);
+    },
     DELETE: captures =>
       Future.of (S.maybe (Response.NotFound ({}) (''))
                          (ingredient => (delete db.ingredients[String (ingredient.id)],
