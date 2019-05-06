@@ -9,21 +9,6 @@ const matches = require ('./matches');
 const routes = require ('./routes');
 const S = require ('./sanctuary');
 
-
-//    maybe :: b -> (a -> b) -> Maybe a -> b
-//             ^    ^^^^^^^^    ^^^^^^^    ^
-//             1       2           3       4
-
-//    Maybe a ~~~> Maybe y
-//          a ~~~> y
-
-//    maybe :: b -> (y -> b) -> Maybe y -> b
-//
-//          b ~~~> Future x y
-
-//    maybe :: Future x y -> (y -> Future x y) -> Maybe y -> Future x y
-
-
 //    maybeToFuture :: x -> Maybe y -> Future x y
 const maybeToFuture = x => maybe =>
   S.maybe (Future.reject (x))  // #1     b          Future x _
