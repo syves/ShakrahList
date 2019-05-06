@@ -19,13 +19,12 @@ module.exports = [
 
   S.Pair ([Literal ('ingredients')]) ({
     GET: captures => {
-      //    fut :: Future Error (Array Ingredient)
-      const fut = Future ((reject, resolve) => {
+      //    f :: StrMap String -> Future Error (Array Ingredient)
+      const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
             .from ('ingredient')
-            .then (resolve, reject);
-      });
-      return S.map (JsonResponse.OK ({})) (fut);
+      );
+      return S.map (JsonResponse.OK ({})) (f (captures));
     },
    // POST: captures => //add unique ?
      // Future.of (S.maybe (knex('ingredient').insert({captures.name})
@@ -33,16 +32,15 @@ module.exports = [
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
     GET: captures => {
-      //    fut :: Future Error (Array Ingredient)
-      const fut = Future ((reject, resolve) => {
+      //    f :: Future Error (Array Ingredient)
+      const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
             .from ('ingredient')
             .where ('id', '=', captures.id)
-            .then (resolve, reject);
-      });
+      );
       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
                               (head => tail => Future.of (JsonResponse.OK ({}) (head))))
-                     (fut);
+                     (f (captures));
     },
     DELETE: captures =>
       Future.of (S.maybe (Response.NotFound ({}) (''))
