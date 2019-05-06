@@ -28,9 +28,8 @@ const server = http.createServer ((req, res) => {
                                   Response.MethodNotAllowed ({Allow}) ('');
                                 return S.maybe (Future.of (defaultResponse))
                                                (handler => handler (captures))
-                                               (S.get (S.K (true))
-                                                      (req.method)
-                                                      (handlers));
+                                               (S.value (req.method)
+                                                        (handlers));
                               })
                              (maybeToFuture ('Path did not match')
                                             (matches (desc) (req.url)))))

@@ -35,12 +35,12 @@ module.exports = [
     GET: captures =>
       Future.of (S.maybe (Response.NotFound ({}) (''))
                          (JsonResponse.OK ({}))
-                         (S.get (S.K (true)) (captures.id) (db.ingredients))),
+                         (S.value (captures.id) (db.ingredients))),
     DELETE: captures =>
       Future.of (S.maybe (Response.NotFound ({}) (''))
                          (ingredient => (delete db.ingredients[String (ingredient.id)],
                                          Response.NoContent ({}) ('')))
-                         (S.get (S.K (true)) (captures.id) (db.ingredients))),
+                         (S.value (captures.id) (db.ingredients))),
 
   }),
 
