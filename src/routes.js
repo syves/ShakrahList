@@ -18,22 +18,15 @@ module.exports = [
   }),
 
   S.Pair ([Literal ('ingredients')]) ({
-    GET: captures =>
-      //Future.of (JsonResponse.OK ({}) (Object.values (db.ingredients))),
-
-      Future.of (JsonResponse.OK ({})
-
-                (knex.select('id', 'name')
-                   .from('ingredient')
-                   .on('query-response', function(response, obj, builder) {
-                     return console.log('get ingredients');
-                   })
-                   .then(function(response) {
-                     return console.log(response);
-                   }).catch(function(error) {
-                     return console.log(error);
-                   }))
-                ),
+    GET: captures => {
+      //    fut :: Future Error (Array Ingredient)
+      const fut = Future ((reject, resolve) => {
+        knex.select ('id', 'name')
+            .from ('ingredient')
+            .then (resolve, reject);
+      });
+      return S.map (JsonResponse.OK ({})) (fut);
+    },
    // POST: captures => //add unique ?
      // Future.of (S.maybe (knex('ingredient').insert({captures.name})
   }),

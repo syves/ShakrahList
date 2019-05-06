@@ -17,18 +17,17 @@ const maybeToFuture = x => maybe =>
           /* return type */    // #4     b          Future x y
 
 const server = http.createServer ((req, res) => {
-  //    response :: Maybe Response
   //    future :: Future Error Response
   const future =
-  S.reduce (future_ => ([desc, handlers]) =>
-              S.alt (future_)
+  S.reduce (future => ([desc, handlers]) =>
+              S.alt (future)
                     (S.chain (captures => {
                                 const Allow =
                                   S.joinWith (', ') (Object.keys (handlers));
                                 const defaultResponse =
                                   Response.MethodNotAllowed ({Allow}) ('');
                                 return S.maybe (Future.of (defaultResponse))
-                                               (S.T (captures))
+                                               (handler => handler (captures))
                                                (S.get (S.K (true))
                                                       (req.method)
                                                       (handlers));
