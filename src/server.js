@@ -20,8 +20,7 @@ const server = http.createServer ((req, res) => {
   //    future :: Future Error Response
   const future =
   S.reduce (future => ([desc, handlers]) =>
-              S.alt (future)
-                    (S.chain (captures => {
+              S.alt (S.chain (captures => {
                                 const Allow =
                                   S.joinWith (', ') (Object.keys (handlers));
                                 const defaultResponse =
@@ -32,7 +31,8 @@ const server = http.createServer ((req, res) => {
                                                         (handlers));
                               })
                              (maybeToFuture ('Path did not match')
-                                            (matches (desc) (req.url)))))
+                                            (matches (desc) (req.url))))
+                    (future))
            (Future.reject ('TK'))
            (routes);
 
