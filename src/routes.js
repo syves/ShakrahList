@@ -13,8 +13,13 @@ const pg = require ('../store');
 module.exports = [
 
   S.Pair ([Literal ('recipes')]) ({
-    GET: captures =>
-      Future.after (2500, JsonResponse.OK ({}) ('recipes')),
+    GET: captures => {
+      const f = Future.encaseP (captures =>
+        knex.select ('id', 'name')
+        .from ('recipe')
+      );
+      return S.map (JsonResponse.OK ({})) (f (captures));
+   },
   }),
 
   S.Pair ([Literal ('ingredients')]) ({
@@ -26,6 +31,7 @@ module.exports = [
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
+  
    // POST: captures => //add unique ?
      // Future.of (S.maybe (knex('ingredient').insert({captures.name})
   }),
