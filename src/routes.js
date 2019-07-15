@@ -31,9 +31,17 @@ module.exports = [
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
-  
-   // POST: captures => //add unique ?
-     // Future.of (S.maybe (knex('ingredient').insert({captures.name})
+
+    POST: captures => {
+      const f = Future.encaseP (captures =>
+        knex('ingredient').insert(captures.name, ['id', 'name'])
+      );
+      return S.chain (S.array (Future.reject (Response.InternalServerError ({}) ('')))
+                              (head => tail => Future.of (JsonResponse.Ok ({}) (head))))
+                              (f (captures));
+
+    // return Future.of (S.maybe (knex('ingredient').insert({captures.name})
+    },
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
