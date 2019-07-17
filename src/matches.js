@@ -1,5 +1,6 @@
 'use strict';
 
+const Component = require ('./Component');
 const S = require ('./sanctuary');
 
 
@@ -12,12 +13,11 @@ const S = require ('./sanctuary');
 //    Nothing
 module.exports = desc => path => {
   const pathStrs = S.reject (S.equals ('')) (S.splitOn ('/') (path));
-
   return S.reduce (acc => ([comp, pathStr]) =>
-                     comp.isWild ?
-                       S.map (S.insert (comp.label) (pathStr)) (acc) :
-                     // Literal
-                       comp.value === pathStr ? acc : S.Nothing)
+                     Component.cata (value => value === pathStr ? acc : S.Nothing)
+                                    (label => S.map (S.insert (label) (pathStr)) (acc))
+                                    (comp))
                   (desc.length === pathStrs.length ? S.Just ({}) : S.Nothing)
                   (S.zip (desc) (pathStrs));
 };
+
