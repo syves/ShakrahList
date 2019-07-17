@@ -25,8 +25,11 @@ const server = http.createServer ((req, res) => {
                                   S.joinWith (', ') (Object.keys (handlers));
                                 const defaultResponse =
                                   Response.MethodNotAllowed ({Allow}) ('');
+                                //:: Maybe Future Response
                                 return S.maybe (Future.of (defaultResponse))
                                                (handler => handler (captures))
+                                               // :: ? request method from handers gives
+                                                // functions?
                                                (S.value (req.method)
                                                         (handlers));
                               })
@@ -34,11 +37,12 @@ const server = http.createServer ((req, res) => {
                                             (matches (desc) (req.url))))
                     (future))
            (Future.reject ('TK'))
-           (routes);
+           (routes /* :: Array (Pair (Array Component) (StrMap (??? -> ???))) */);
 
   future.fork (
     err => {
-      // Custom error handling...
+      console.error(err)
+      console.log
     },
     response => {
       res.writeHead (response.statusCode, response.headers);

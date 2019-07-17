@@ -33,7 +33,8 @@ module.exports = [
   }),
 
   //TODO get, update, delete by ID.
-  //S.Pair ([Literal ('recipes')]) ({
+  //S.Pair ([Literal ('recipes'), Wild ('id')]) ({
+  // captures => queryDatabase (captures.id)
    // GET
     //UPDATE ...remove replace an ingredient, amount, or description.*
     //DELETE
