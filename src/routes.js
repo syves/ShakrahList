@@ -37,24 +37,21 @@ module.exports = [
                      (S.maybe (Future.reject ('Invalid request body'))
                               (Future.of)
                               (bodyM))),
-
-    //POST: captures => bodyM => {
+/*
+    POST: captures => bodyM => {
       //    bodyF :: Future String Body
-     // const bodyF =
-      //S.maybe (Future.reject ('Invalid request body'))
-        //      (Future.of)
-          //    (bodyM);
-
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
       //    insertF :: Body -> Future String Result
-      //const insertF = Future.encaseP (body => knex('ingredients').insert({name: body.param1}));
-
+      const insertF = Future.encaseP (body => knex('ingredients').insert({name: body.param1}));
       //    resultF :: Future String Result
-      //const resultF = S.chain (insertF) (bodyF);
-
-      //return S.map (JsonResponse.OK ({})) (resultF);
-    //}
+      const resultF = S.chain (insertF) (bodyF);
+      return S.map (JsonResponse.OK ({})) (resultF);
+    }
   }),
-
+*/
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
     GET: captures => body => {
       //    f :: Future Error (Array Ingredient)
