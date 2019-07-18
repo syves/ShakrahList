@@ -7,16 +7,9 @@ const {Literal, Wild} = require ('./Component');
 const JsonResponse = require ('./JsonResponse');
 const Response = require ('./Response');
 const S = require ('./sanctuary');
-//const { body } = require ('./server');
+
 
 module.exports = [
-
-  //when one makes a list, one can update it many times.
-  //One can add individual ingredients.
-  //one can add multiple ingredients.
-  //one can add ingrediants from a recipe.see recipe.js
-  //Q: could reipes also have a feature so that ingredients
-  //could be automatically added to an existing list?
 
   S.Pair ([Literal ('recipes')]) ({
     GET: captures => body => {
@@ -26,20 +19,7 @@ module.exports = [
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
    },
-    //POST: captures =>
-    //const f = Future.encaseP (captures =>
-      //knex('recipe').insert({body?}, ['id', 'name'])
-    //);
-      //return S.map (JsonResponse.OK ({})) (f (captures));
   }),
-
-  //TODO get, update, delete by ID.
-  //S.Pair ([Literal ('recipes'), Wild ('id')]) ({
-  // captures => queryDatabase (captures.id)
-   // GET
-    //UPDATE ...remove replace an ingredient, amount, or description.*
-    //DELETE
-  //}),
 
   S.Pair ([Literal ('ingredients')]) ({
     GET: captures => body => {
@@ -51,18 +31,28 @@ module.exports = [
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
 
-    POST: captures => body => {
-      console.log ('body:');
-      console.log (body);
-      const f = Future.encaseP (body =>
-        console.log
-                knex('ingredients').insert({name: body.param1}));
-       // S.maybe (Future.reject('body not found'))
-         //       (Future.of ((knex('ingredients').insert({name: body.param1}))))
-           //     (body)
-      //);
-      return S.map (JsonResponse.OK ({})) (f (captures));
-    }
+    POST: captures => bodyM =>
+      S.map (JsonResponse.OK ({}))
+            (S.chain (Future.encaseP (body => knex('ingredients').insert({name: body.param1})))
+                     (S.maybe (Future.reject ('Invalid request body'))
+                              (Future.of)
+                              (bodyM))),
+
+    //POST: captures => bodyM => {
+      //    bodyF :: Future String Body
+     // const bodyF =
+      //S.maybe (Future.reject ('Invalid request body'))
+        //      (Future.of)
+          //    (bodyM);
+
+      //    insertF :: Body -> Future String Result
+      //const insertF = Future.encaseP (body => knex('ingredients').insert({name: body.param1}));
+
+      //    resultF :: Future String Result
+      //const resultF = S.chain (insertF) (bodyF);
+
+      //return S.map (JsonResponse.OK ({})) (resultF);
+    //}
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
@@ -88,7 +78,6 @@ module.exports = [
                               (f (captures)));
     }
   }),
-
 ];
 
 
