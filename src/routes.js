@@ -7,6 +7,7 @@ const {Literal, Wild} = require ('./Component');
 const JsonResponse = require ('./JsonResponse');
 const Response = require ('./Response');
 const S = require ('./sanctuary');
+//const { body } = require ('./server');
 
 module.exports = [
 
@@ -18,7 +19,7 @@ module.exports = [
   //could be automatically added to an existing list?
 
   S.Pair ([Literal ('recipes')]) ({
-    GET: captures => {
+    GET: captures => body => {
       const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
         .from ('recipe')
@@ -27,7 +28,7 @@ module.exports = [
    },
     //POST: captures =>
     //const f = Future.encaseP (captures =>
-      //knex('recipe').insert({captures.name}, ['id', 'name'])
+      //knex('recipe').insert({body?}, ['id', 'name'])
     //);
       //return S.map (JsonResponse.OK ({})) (f (captures));
   }),
@@ -41,28 +42,31 @@ module.exports = [
   //}),
 
   S.Pair ([Literal ('ingredients')]) ({
-    GET: captures => {
+    GET: captures => body => {
       //    f :: StrMap String -> Future Error (Array Ingredient)
       const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
             .from ('ingredient')
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
-     },
+    },
 
-   POST: captures => {
-    const f = Future.encaseP (captures =>
-      knex('ingredients').insert({name: captures.name})
-    );
-    //return S.chain (S.array (Future.reject (Response.InternalServerError ({}) ('')))
-      //                      (head => tail => Future.of (JsonResponse.Ok ({}) (head))))
-        //                    (f (captures));
+    POST: captures => body => {
+      console.log ('body:');
+      console.log (body);
+      const f = Future.encaseP (body =>
+        console.log
+                knex('ingredients').insert({name: body.param1}));
+       // S.maybe (Future.reject('body not found'))
+         //       (Future.of ((knex('ingredients').insert({name: body.param1}))))
+           //     (body)
+      //);
       return S.map (JsonResponse.OK ({})) (f (captures));
     }
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
-    GET: captures => {
+    GET: captures => body => {
       //    f :: Future Error (Array Ingredient)
       const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
@@ -73,7 +77,7 @@ module.exports = [
                               (head => tail => Future.of (JsonResponse.OK ({}) (head))))
                      (f (captures));
     },
-    DELETE: captures => {
+    DELETE: captures => body => {
       const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
             .from('ingredient')
