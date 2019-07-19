@@ -23,7 +23,7 @@ const server = http.createServer ((req, res) => {
 
   //    body :: Future String (Maybe String)
   const body =
-    req.method === 'POST' ?
+    req.method === 'POST' || req.method === 'PUT' ?
     Future ((reject, resolve) => {
       let body = '';
       req.on ('data', chunk => {

@@ -68,15 +68,20 @@ module.exports = [
       //return S.map (JsonResponse.OK ({})) ( getByIdF (captures));
     },
 
-    PUT: captures => body => {
-      const updateF = captures => Future ((reject, resolve) => {
+    PUT: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const updateF = body =>Future ((reject, resolve) => {
         knex('ingredient')
             .where ('id', '=', captures.id)
-            .update({name: body.param1}, ['id', 'name'])
+            .update(body, ['id', 'name'])
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      return S.map (JsonResponse.OK ({})) (updateF (captures));
+      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
     },
 
     DELETE: captures => body => {
