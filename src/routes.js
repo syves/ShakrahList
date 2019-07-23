@@ -18,7 +18,26 @@ module.exports = [
         .from ('recipe')
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
-   },
+    },
+
+     POST: captures => bodyM => {
+      //    bodyF :: Future String Body
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      //    insertF :: Body -> Future String Result
+      const insertF = body => Future ((reject, resolve) => {
+        knex('recipe')
+        .returning(['id', 'name', 'description'])
+        .insert(body)
+        .then(result => { console.log ('succeeded', result); resolve (result); })
+        .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+    }
+
   }),
 
   S.Pair ([Literal ('ingredients')]) ({
@@ -31,7 +50,7 @@ module.exports = [
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
-    // CREATE ingredient
+
     POST: captures => bodyM => {
       //    bodyF :: Future String Body
       const bodyF =

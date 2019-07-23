@@ -4,10 +4,10 @@ const S = require ('./sanctuary');
 
 
 module.exports = name => amount => ({
-  'constructor': {'@@type': 'ShakrahList/Item'},
+  'constructor': {'@@type': 'ShakrahList/Ingredient'},
   name,
   amount,
-  '@@show': () => `Item (${S.show (name)}) (${S.show (amount)})`,
+  '@@show': () => `Ingredient (${S.show (name)}) (${S.show (amount)})`,
   'fantasy-land/equals': function(other) {
     return S.equals (other.name) (this.name) &&
            S.equals (other.amount) (this.amount);
