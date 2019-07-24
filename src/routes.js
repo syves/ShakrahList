@@ -10,19 +10,127 @@ const S = require ('./sanctuary');
 
 
 module.exports = [
-  //get stores
-
-  /* you can make a list by:
-   * 1. dragging items(how are items dispalys/grouped) to a list
-   * 2. draggig recipes to list -> GET recipe_ingredients/ filter id=recipe_id
-   * 3. unselect from your recent list/starter list [not MVP]
-   *
-   * choose stores
-   * view 2: choose locations -> change the view to sorting by store
-   *
-   * */
   //GET lists
-   S.Pair ([Literal ('stores')]) ({
+   S.Pair ([Literal ('lists')]) ({
+    GET: captures => body => {
+      const f = Future.encaseP (captures =>
+        knex.select ('id', 'updated_at')
+        .from ('store')
+      );
+      return S.map (JsonResponse.OK ({})) (f (captures));
+    },
+
+     POST: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const insertF = body => Future ((reject, resolve) => {
+        knex('list')
+        .returning(['id', 'created_at'])
+        .insert(body)
+        .then(result => { console.log ('succeeded', result); resolve (result); })
+        .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+    }
+
+  }),
+  S.Pair ([Literal ('lists'), Wild ('id')]) ({
+    GET: captures => body => {
+      const getByIdF = captures => Future ((reject, resolve) => {
+        knex('list')
+            .select ('id', 'updated_at')
+            .where ('id', '=', captures.id)
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                  (getByIdF (captures));
+    }
+  }),
+
+    // PUT is not supported here, lists do not currently have a name.
+    // PUT is supported on list_ingredients only.
+
+    //DELETE should only be supported internally. Lists will be used for user behaviour data.
+
+    S.Pair ([Literal ('list-ingredients')]) ({
+    GET: captures => body => {
+      const f = Future.encaseP (captures =>
+        knex.select ('id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id')
+        .from ('list_ingredient')
+      );
+      return S.map (JsonResponse.OK ({})) (f (captures));
+    },
+
+     POST: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const insertF = body => Future ((reject, resolve) => {
+        knex('list_ingredient')
+        .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
+        .insert(body)
+        .then(result => { console.log ('succeeded', result); resolve (result); })
+        .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+    }
+
+  }),
+  S.Pair ([Literal ('list-ingredients'), Wild ('id')]) ({
+    /*
+     *When a recipe is dragged to a list, all recipe_ingredients
+     will be inserted into list_ingredients.
+     * */
+    GET: captures => body => {
+      const getByIdF = captures => Future ((reject, resolve) => {
+        knex('list_ingredient')
+            .select ('id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id')
+            .where ('id', '=', captures.id)
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                  (getByIdF (captures));
+    },
+
+    PUT: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const updateF = body =>Future ((reject, resolve) => {
+        knex('store')
+            .where ('id', '=', captures.id)
+            .update(body, ['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+    },
+
+    DELETE: captures => body => {
+      const delF = captures => Future ((reject, resolve) => {
+        knex('list_ingredient')
+            .where ('id', '=', captures.id)
+            .del()
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (delF (captures));
+    }
+  }),
+
+
+  S.Pair ([Literal ('stores')]) ({
     GET: captures => body => {
       const f = Future.encaseP (captures =>
         knex.select ('id', 'name')
@@ -30,7 +138,8 @@ module.exports = [
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
-
+    //TODO error on post non uique store does not bubble up -> cannot resolve POST?
+    //SERVER: Unhandled rejection error: duplicate key value violates unique constraint "store_name_unique"
      POST: captures => bodyM => {
       const bodyF =
       S.maybe (Future.reject ('Invalid request body'))
