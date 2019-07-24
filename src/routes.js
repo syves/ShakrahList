@@ -10,6 +10,85 @@ const S = require ('./sanctuary');
 
 
 module.exports = [
+  //get stores
+
+  /* you can make a list by:
+   * 1. dragging items(how are items dispalys/grouped) to a list
+   * 2. draggig recipes to list -> GET recipe_ingredients/ filter id=recipe_id
+   * 3. unselect from your recent list/starter list [not MVP]
+   *
+   * choose stores
+   * view 2: choose locations -> change the view to sorting by store
+   *
+   * */
+  //GET lists
+   S.Pair ([Literal ('stores')]) ({
+    GET: captures => body => {
+      const f = Future.encaseP (captures =>
+        knex.select ('id', 'name')
+        .from ('store')
+      );
+      return S.map (JsonResponse.OK ({})) (f (captures));
+    },
+
+     POST: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const insertF = body => Future ((reject, resolve) => {
+        knex('store')
+        .returning(['id', 'name'])
+        .insert(body)
+        .then(result => { console.log ('succeeded', result); resolve (result); })
+        .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+    }
+
+  }),
+  S.Pair ([Literal ('stores'), Wild ('id')]) ({
+    GET: captures => body => {
+      const getByIdF = captures => Future ((reject, resolve) => {
+        knex('store')
+            .select ('id', 'name')
+            .where ('id', '=', captures.id)
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                  (getByIdF (captures));
+    },
+
+    PUT: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const updateF = body =>Future ((reject, resolve) => {
+        knex('store')
+            .where ('id', '=', captures.id)
+            .update(body, ['id', 'name'])
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+    },
+
+    DELETE: captures => body => {
+      const delF = captures => Future ((reject, resolve) => {
+        knex('store')
+            .where ('id', '=', captures.id)
+            .del()
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (delF (captures));
+    }
+  }),
 
   S.Pair ([Literal ('recipes')]) ({
     GET: captures => body => {
@@ -21,13 +100,11 @@ module.exports = [
     },
 
      POST: captures => bodyM => {
-      //    bodyF :: Future String Body
       const bodyF =
       S.maybe (Future.reject ('Invalid request body'))
               (Future.of)
               (bodyM);
 
-      //    insertF :: Body -> Future String Result
       const insertF = body => Future ((reject, resolve) => {
         knex('recipe')
         .returning(['id', 'name', 'description'])
@@ -38,6 +115,47 @@ module.exports = [
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
     }
 
+  }),
+  S.Pair ([Literal ('recipes'), Wild ('id')]) ({
+    GET: captures => body => {
+      const getByIdF = captures => Future ((reject, resolve) => {
+        knex('recipe')
+            .select ('id', 'name', 'description')
+            .where ('id', '=', captures.id)
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                  (getByIdF (captures));
+    },
+
+    PUT: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const updateF = body =>Future ((reject, resolve) => {
+        knex('recipe')
+            .where ('id', '=', captures.id)
+            .update(body, ['id', 'name', 'description'])
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+    },
+
+    DELETE: captures => body => {
+      const delF = captures => Future ((reject, resolve) => {
+        knex('recipe')
+            .where ('id', '=', captures.id)
+            .del()
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (delF (captures));
+    }
   }),
 
   S.Pair ([Literal ('recipe-ingredients')]) ({
@@ -50,7 +168,6 @@ module.exports = [
     },
 
      POST: captures => bodyM => {
-      //    bodyF :: Future String Body
       const bodyF =
       S.maybe (Future.reject ('Invalid request body'))
               (Future.of)
@@ -59,18 +176,57 @@ module.exports = [
       //    insertF :: Body -> Future String Result
       const insertF = body => Future ((reject, resolve) => {
         knex('recipe_ingredient')
-        .returning(['recipe-id', 'ingredient-id', 'quantity', 'unit-id'])
+        .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id'])
         .insert(body)
         .then(result => { console.log ('succeeded', result); resolve (result); })
         .error(err => { console.log ('failed'); reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
     }
+  }),
+  S.Pair ([Literal ('recipe-ingredients'), Wild ('id')]) ({
+    GET: captures => body => {
+      const getByIdF = captures => Future ((reject, resolve) => {
+        knex('recipe_ingredient')
+            .select ('id', 'ingredient-id', 'quantity', 'unit-id')
+            .where ('id', '=', captures.id)
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                  (getByIdF (captures));
+    },
 
+    PUT: captures => bodyM => {
+      const bodyF =
+      S.maybe (Future.reject ('Invalid request body'))
+              (Future.of)
+              (bodyM);
+
+      const updateF = body =>Future ((reject, resolve) => {
+        knex('recipe_ingredient')
+            .where ('id', '=', captures.id)
+            .update(body, ['id', 'ingredient-id', 'quantity', 'unit-id'])
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+    },
+
+    DELETE: captures => body => {
+      const delF = captures => Future ((reject, resolve) => {
+        knex('recipe_ingredient')
+            .where ('id', '=', captures.id)
+            .del()
+            .then(result => { console.log ('succeeded', result); resolve (result); })
+            .error(err => { console.log ('failed'); reject (err); });
+      });
+      return S.map (JsonResponse.OK ({})) (delF (captures));
+    }
   }),
 
   S.Pair ([Literal ('ingredients')]) ({
-    // READ ingredients
     GET: captures => body => {
       //    f :: StrMap String -> Future Error (Array Ingredient)
       const f = Future.encaseP (captures =>
@@ -81,13 +237,11 @@ module.exports = [
     },
 
     POST: captures => bodyM => {
-      //    bodyF :: Future String Body
       const bodyF =
       S.maybe (Future.reject ('Invalid request body'))
               (Future.of)
               (bodyM);
 
-      //    insertF :: Body -> Future String Result
       const insertF = body => Future ((reject, resolve) => {
         knex('ingredient')
         .returning(['id', 'name'])
