@@ -10,12 +10,11 @@ const S = require ('./sanctuary');
 
 
 module.exports = [
-  //GET lists
    S.Pair ([Literal ('lists')]) ({
     GET: captures => body => {
       const f = Future.encaseP (captures =>
         knex.select ('id', 'updated_at')
-        .from ('store')
+        .from ('list')
       );
       return S.map (JsonResponse.OK ({})) (f (captures));
     },
@@ -34,6 +33,9 @@ module.exports = [
         .error(err => { console.log ('failed'); reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+      return S.chain (S.array (Response.NotFound ({}) (''))
+                              (JsonResponse.Ok ({}) (err)))
+                   (insertF (bodyF));
     }
 
   }),
@@ -46,9 +48,9 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
-                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
-                  (getByIdF (captures));
+       return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
+                               (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                      (getByIdF (captures));
     }
   }),
 
@@ -67,19 +69,34 @@ module.exports = [
     },
 
      POST: captures => bodyM => {
-      const bodyF =
-      S.maybe (Future.reject ('Invalid request body'))
-              (Future.of)
-              (bodyM);
+       //    bodyF :: Future String Object
+       const bodyF =
+       S.maybe (Future.reject ('Invalid request body'))
+               (Future.of)
+               (bodyM);
 
-      const insertF = body => Future ((reject, resolve) => {
-        knex('list_ingredient')
-        .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
-        .insert(body)
-        .then(result => { console.log ('succeeded', result); resolve (result); })
-        .error(err => { console.log ('failed'); reject (err); });
-      });
-      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+       //    insertF :: Object -> Future String Result
+       const insertF = body => Future ((reject, resolve) => {
+         knex('list_ingredient')
+         .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
+         .insert(body)
+         .then(result => { console.log ('succeeded', result); resolve (result); })
+         .error(err => { console.log ('failed'); reject (err.message); });
+       });
+
+//     Future.chainRej :: (String -> Future String Result) -> Future String Result -> Future String Result
+
+       return Future.chainRej (s => (console.log (s) || s === 'XXX') ?
+                                    Future.of ('TK') :
+                                    Future.rej (s))
+                              (S.chain (insertF) (bodyF));
+
+       //should fail is body is not unique
+       //return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+
+       //return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
+       //                        (head => tail => Future.of (JsonResponse.OK ({}))))
+       //               (S.chain (insertF) (bodyF)))
     }
 
   }),
@@ -96,7 +113,7 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
+       return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
                   (getByIdF (captures));
     },
@@ -125,7 +142,10 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      return S.map (JsonResponse.OK ({})) (delF (captures));
+      return S.map (rows => rows == 0 ?
+                              Response.NotFound ({}) ('') :
+                              Response.NoContent ({}) (''))
+                   (delF (captures));
     }
   }),
 
@@ -195,7 +215,10 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      return S.map (JsonResponse.OK ({})) (delF (captures));
+      return S.map (rows => rows == 0 ?
+                              Response.NotFound ({}) ('') :
+                              Response.NoContent ({}) (''))
+                   (delF (captures));
     }
   }),
 
@@ -263,7 +286,10 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      return S.map (JsonResponse.OK ({})) (delF (captures));
+      return S.map (rows => rows == 0 ?
+                              Response.NotFound ({}) ('') :
+                              Response.NoContent ({}) (''))
+                   (delF (captures));
     }
   }),
 
@@ -331,7 +357,10 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      return S.map (JsonResponse.OK ({})) (delF (captures));
+      return S.map (rows => rows == 0 ?
+                              Response.NotFound ({}) ('') :
+                              Response.NoContent ({}) (''))
+                   (delF (captures));
     }
   }),
 
@@ -364,7 +393,7 @@ module.exports = [
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
     GET: captures => body => {
-      //    f :: Future Error (Array Ingredient)
+      //    getByIdF :: StrMap String -> Future Error (Array Ingredient)
       const getByIdF = captures => Future ((reject, resolve) => {
         knex('ingredient')
             .select ('id', 'name')
@@ -373,9 +402,9 @@ module.exports = [
             .error(err => { console.log ('failed'); reject (err); });
       });
       // TODO: 404s do not bubble up to client, only in server logging
-       return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
-                             (head => tail => Future.of (JsonResponse.OK ({}) (head))))
-                  (getByIdF (captures));
+       return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
+                               (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+                      (getByIdF (captures));
       //return S.map (JsonResponse.OK ({})) ( getByIdF (captures));
     },
 
@@ -403,12 +432,10 @@ module.exports = [
             .then(result => { console.log ('succeeded', result); resolve (result); })
             .error(err => { console.log ('failed'); reject (err); });
       });
-      //TODO if delete fails returns 0
-      return S.map (JsonResponse.OK ({})) (delF (captures));
-      // TODO: error x.slices is not a function.
-      //return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
-      //                        (head => tail => Future.of (Repsonse.NoContent ({}) ('')))
-      //                        (delF (captures)));
+      return S.map (rows => rows == 0 ?
+                              Response.NotFound ({}) ('') :
+                              Response.NoContent ({}) (''))
+                   (delF (captures));
     }
   }),
 ];

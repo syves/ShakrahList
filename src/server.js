@@ -68,8 +68,7 @@ const server = http.createServer ((req, res) => {
 
   future.fork (
     err => {
-      console.error(err)
-      console.log
+      console.error ('err:', err);
     },
     response => {
       res.writeHead (response.statusCode, response.headers);
