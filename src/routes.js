@@ -45,8 +45,8 @@ module.exports = [
         knex('list')
             .select ('id', 'updated_at')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
        return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
                                (head => tail => Future.of (JsonResponse.OK ({}) (head))))
@@ -80,8 +80,8 @@ module.exports = [
          knex('list_ingredient')
          .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
          .insert(body)
-         .then(result => { console.log ('succeeded', result); resolve (result); })
-         .error(err => { console.log ('failed'); reject (err.message); });
+         .then(result => { resolve (result); })
+         .error(err => { reject (err.message); });
        });
 
 //     Future.chainRej :: (String -> Future String Result) -> Future String Result -> Future String Result
@@ -110,8 +110,8 @@ module.exports = [
         knex('list_ingredient')
             .select ('id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
        return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
@@ -128,8 +128,8 @@ module.exports = [
         knex('store')
             .where ('id', '=', captures.id)
             .update(body, ['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id', 'store-id'])
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
     },
@@ -139,8 +139,8 @@ module.exports = [
         knex('list_ingredient')
             .where ('id', '=', captures.id)
             .del()
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (rows => rows == 0 ?
                               Response.NotFound ({}) ('') :
@@ -170,8 +170,8 @@ module.exports = [
         knex('store')
         .returning(['id', 'name'])
         .insert(body)
-        .then(result => { console.log ('succeeded', result); resolve (result); })
-        .error(err => { console.log ('failed'); reject (err); });
+        .then(result => { resolve (result); })
+        .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
     }
@@ -183,8 +183,8 @@ module.exports = [
         knex('store')
             .select ('id', 'name')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
        return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
@@ -201,8 +201,8 @@ module.exports = [
         knex('store')
             .where ('id', '=', captures.id)
             .update(body, ['id', 'name'])
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
     },
@@ -212,8 +212,8 @@ module.exports = [
         knex('store')
             .where ('id', '=', captures.id)
             .del()
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (rows => rows == 0 ?
                               Response.NotFound ({}) ('') :
@@ -241,8 +241,8 @@ module.exports = [
         knex('recipe')
         .returning(['id', 'name', 'description'])
         .insert(body)
-        .then(result => { console.log ('succeeded', result); resolve (result); })
-        .error(err => { console.log ('failed'); reject (err); });
+        .then(result => { resolve (result); })
+        .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
     }
@@ -254,8 +254,8 @@ module.exports = [
         knex('recipe')
             .select ('id', 'name', 'description')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
        return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
@@ -272,8 +272,8 @@ module.exports = [
         knex('recipe')
             .where ('id', '=', captures.id)
             .update(body, ['id', 'name', 'description'])
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
     },
@@ -283,8 +283,8 @@ module.exports = [
         knex('recipe')
             .where ('id', '=', captures.id)
             .del()
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (rows => rows == 0 ?
                               Response.NotFound ({}) ('') :
@@ -313,8 +313,8 @@ module.exports = [
         knex('recipe_ingredient')
         .returning(['id', 'recipe-id', 'ingredient-id', 'quantity', 'unit-id'])
         .insert(body)
-        .then(result => { console.log ('succeeded', result); resolve (result); })
-        .error(err => { console.log ('failed'); reject (err); });
+        .then(result => { resolve (result); })
+        .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
     }
@@ -325,8 +325,8 @@ module.exports = [
         knex('recipe_ingredient')
             .select ('id', 'ingredient-id', 'quantity', 'unit-id')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
        return S.chain (S.array (Future.reject (Response.NotFound ({}) ('')))
                              (head => tail => Future.of (JsonResponse.OK ({}) (head))))
@@ -343,8 +343,8 @@ module.exports = [
         knex('recipe_ingredient')
             .where ('id', '=', captures.id)
             .update(body, ['id', 'ingredient-id', 'quantity', 'unit-id'])
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
     },
@@ -354,8 +354,8 @@ module.exports = [
         knex('recipe_ingredient')
             .where ('id', '=', captures.id)
             .del()
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
+            .error(err => { reject (err); });
       });
       return S.map (rows => rows == 0 ?
                               Response.NotFound ({}) ('') :
@@ -380,14 +380,17 @@ module.exports = [
               (Future.of)
               (bodyM);
 
+      //    insertF :: Object -> Future String Response
       const insertF = body => Future ((reject, resolve) => {
         knex('ingredient')
         .returning(['id', 'name'])
-        .insert({name: body.param1})
-        .then(result => { console.log ('succeeded', result); resolve (result); })
-        .error(err => { console.log ('failed'); reject (err); });
+        .insert(body)
+        .then(
+          result => { resolve (JsonReponse.OK ({}) (result)); },
+          err => { resolve (Response.BadRequest ({}) (err.detail)); }
+        );
       });
-      return S.map (JsonResponse.OK ({})) (S.chain (insertF) (bodyF));
+      return S.chain (insertF) (bodyF);
     }
   }),
 
@@ -398,14 +401,15 @@ module.exports = [
         knex('ingredient')
             .select ('id', 'name')
             .where ('id', '=', captures.id)
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(
+              result => { resolve (JsonResponse.OK ({}) (result)); },
+              err => { resolve (Response.NotFound ({}) (err.detail)); }
+        );
       });
-      // TODO: 404s do not bubble up to client, only in server logging
-       return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
-                               (head => tail => Future.of (JsonResponse.OK ({}) (head))))
-                      (getByIdF (captures));
-      //return S.map (JsonResponse.OK ({})) ( getByIdF (captures));
+      return getByIdF (captures);
+      //      return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
+           //                  (head => tail => Future.of (JsonResponse.OK ({}) (head))))
+             //         (getByIdF (captures));
     },
 
     PUT: captures => bodyM => {
