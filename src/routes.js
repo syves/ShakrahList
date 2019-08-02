@@ -383,10 +383,10 @@ module.exports = [
       //    insertF :: Object -> Future String Response
       const insertF = body => Future ((reject, resolve) => {
         knex('ingredient')
-        .returning(['id', 'name'])
+        .returning(['id', 'name', 'amount'])
         .insert(body)
         .then(
-          result => { resolve (JsonReponse.OK ({}) (result)); },
+          result => { resolve (JsonResponse.OK ({}) (result)); },
           err => { resolve (Response.BadRequest ({}) (err.detail)); }
         );
       });
@@ -414,12 +414,17 @@ module.exports = [
 
       const updateF = body =>Future ((reject, resolve) => {
         knex('ingredient')
+            .returning(['id', 'name', 'amount'])
             .where ('id', '=', captures.id)
-            .update(body, ['id', 'name'])
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .update(body, ['name', 'amount'])
+            .then(
+              result => { resolve (JsonResponse.OK ({}) (result)); },
+              err => { resolve (Response.BadRequest ({}) (err.detail)); }
+            );
       });
-      return S.map (JsonResponse.OK ({})) (S.chain (updateF) (bodyF));
+      //TODO If you try to update 'id' 200 []
+      //TODO add lowercasing to all entries being looked up in db, popcorn shouldEqual Popcorn
+      return S.chain (updateF) (bodyF);
     },
 
     DELETE: captures => body => {
@@ -427,8 +432,7 @@ module.exports = [
         knex('ingredient')
             .where ('id', '=', captures.id)
             .del()
-            .then(result => { console.log ('succeeded', result); resolve (result); })
-            .error(err => { console.log ('failed'); reject (err); });
+            .then(result => { resolve (result); })
       });
       return S.map (rows => rows == 0 ?
                               Response.NotFound ({}) ('') :
