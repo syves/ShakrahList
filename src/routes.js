@@ -395,22 +395,16 @@ module.exports = [
   }),
 
   S.Pair ([Literal ('ingredients'), Wild ('id')]) ({
-    GET: captures => body => {
-      //    getByIdF :: StrMap String -> Future Error (Array Ingredient)
-      const getByIdF = captures => Future ((reject, resolve) => {
+    GET: captures => body =>
+      //    getByIdF :: Future Error (Array Ingredient)
+      Future ((reject, resolve) => {
         knex('ingredient')
             .select ('id', 'name')
             .where ('id', '=', captures.id)
-            .then(
-              result => { resolve (JsonResponse.OK ({}) (result)); },
-              err => { resolve (Response.NotFound ({}) (err.detail)); }
-        );
-      });
-      return getByIdF (captures);
-      //      return S.chain (S.array (Future.of (Response.NotFound ({}) ('')))
-           //                  (head => tail => Future.of (JsonResponse.OK ({}) (head))))
-             //         (getByIdF (captures));
-    },
+            .then (S.array (Response.NotFound ({}) (''))
+                           (head => tail => JsonResponse.OK ({}) (head)))
+            .then (resolve)
+      }),
 
     PUT: captures => bodyM => {
       const bodyF =
